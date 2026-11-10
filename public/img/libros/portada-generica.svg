@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420" role="img" aria-label="Portada genérica">
+  <rect width="300" height="420" fill="#5b6b73"/>
+  <rect x="18" y="18" width="264" height="384" fill="none" stroke="#e8e1d5" stroke-width="2" opacity="0.6"/>
+  <g fill="none" stroke="#e8e1d5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" transform="translate(110 150) scale(3.4)">
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke-width="1.8"/>
+  </g>
+  <text x="150" y="340" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#e8e1d5">BiblioWeb</text>
+</svg>
