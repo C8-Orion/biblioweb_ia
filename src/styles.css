@@ -1,4 +1,3 @@
-/* Bootstrap 5.3 (CDN) + public/css/* carry the design; Tailwind preflight is skipped so it doesn't reset Bootstrap. */
+/* The look comes from Bootstrap 5.3 (CDN) + public/css/*. Tailwind preflight/utilities are
+   intentionally not loaded: they reset Bootstrap and clash with classes like .collapse. */
 @import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities) source(none);
-@source "../src";
