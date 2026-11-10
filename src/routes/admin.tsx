@@ -1,5 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { buscarLibrosIA } from "@/lib/ai/buscar-libros.functions";
+import type { OpcionLibroIA } from "@/lib/ai/buscar-libros.server";
 import { AdminNavbar, FooterSimple } from "@/components/Layout";
 import { estaAutenticado, logout } from "@/lib/auth";
 import { hideModal, showModal } from "@/lib/bootstrap";
@@ -52,6 +55,7 @@ function Panel({ onLogout }: { onLogout: () => void }) {
   const isbnRef = useRef<HTMLInputElement>(null);
   const tituloRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+  const iaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), 2800); return () => clearTimeout(t); }, [toast]);
   useEffect(() => {
@@ -96,7 +100,11 @@ function Panel({ onLogout }: { onLogout: () => void }) {
               <h2 className="h4 font-serif fw-bold text-primary mb-1" id="form-libro-titulo">{editId ? "Editando libro" : "Registrar nuevo libro"}</h2>
               <p className="text-secondary small mb-0">{editId ? `Modifica los datos de "${editTitulo}" y guarda los cambios.` : "Ingresa los datos del volumen para la catalogación oficial."}</p>
             </div>
-            {editId && <button className="btn btn-sm btn-outline-secondary" type="button" onClick={modoCrear}>Cancelar edición</button>}
+            <div className="d-flex gap-2 flex-wrap">
+              {editId && <button className="btn btn-sm btn-outline-secondary" type="button" onClick={modoCrear}>Cancelar edición</button>}
+              <button className="btn btn-sm btn-outline-secondary" type="button" onClick={() => { modoCrear(); tituloRef.current?.focus(); }}>+ Nuevo libro</button>
+              <button className="btn btn-sm btn-terracota" type="button" onClick={() => showModal(iaRef.current)}>✨ Agregar con IA</button>
+            </div>
           </div>
           <form ref={formRef} noValidate className={validado ? "was-validated" : ""} onReset={(e) => { e.preventDefault(); modoCrear(); }} onSubmit={(e) => {
             e.preventDefault();
@@ -273,6 +281,15 @@ function Panel({ onLogout }: { onLogout: () => void }) {
         </div>
       </div>
 
+      <ModalIA modalRef={iaRef} onElegir={(o) => {
+        modoCrear();
+        setDatos({ ...VACIO, titulo: o.titulo, autor: o.autor, categoria: o.categoria, descripcion: o.descripcion, sinopsis: o.sinopsis,
+          anio: o.anio ? String(o.anio) : "", editorial: o.editorial ?? "", isbn: o.isbn && isbnValido(o.isbn) ? formatearISBN(o.isbn) : "" });
+        hideModal(iaRef.current);
+        notificar(`Datos de "${o.titulo}" cargados. Revisa y pulsa Guardar libro.`, "info");
+        setTimeout(() => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 300);
+      }} />
+
       <div className="toast-container position-fixed bottom-0 end-0 p-3">
         {toast && (
           <div key={toast.n} aria-atomic="true" aria-live="polite" role="status"
@@ -286,5 +303,59 @@ function Panel({ onLogout }: { onLogout: () => void }) {
       </div>
       <FooterSimple>BiblioWeb · Sistema Cívico de Archivo Municipal · Acceso Autorizado</FooterSimple>
     </>
+  );
+}
+
+function ModalIA({ modalRef, onElegir }: { modalRef: React.RefObject<HTMLDivElement | null>; onElegir: (o: OpcionLibroIA) => void }) {
+  const buscar = useServerFn(buscarLibrosIA);
+  const [consulta, setConsulta] = useState("");
+  const [cargando, setCargando] = useState(false);
+  const [opciones, setOpciones] = useState<OpcionLibroIA[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  return (
+    <div aria-hidden="true" aria-labelledby="modalIALabel" className="modal fade" id="modalIA" tabIndex={-1} ref={modalRef}>
+      <div className="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div className="modal-content card-biblioweb">
+          <div className="modal-header border-bottom">
+            <h2 className="modal-title h5 font-serif fw-bold" id="modalIALabel">✨ Agregar libro con IA</h2>
+            <button aria-label="Cerrar" className="btn-close" data-bs-dismiss="modal" type="button" />
+          </div>
+          <div className="modal-body">
+            <form className="input-group mb-3" onSubmit={async (e) => {
+              e.preventDefault();
+              if (consulta.trim().length < 2 || cargando) return;
+              setCargando(true); setError(null); setOpciones(null);
+              try {
+                const r = await buscar({ data: { consulta } });
+                setOpciones(r.opciones); setError(r.error);
+              } catch { setError("No se pudo completar la búsqueda con IA."); }
+              finally { setCargando(false); }
+            }}>
+              <input className="form-control" placeholder="Nombre del libro o autor (ej. Rayuela, Cortázar)" value={consulta} onChange={(e) => setConsulta(e.target.value)} aria-label="Buscar libro con IA" />
+              <button className="btn btn-terracota" type="submit" disabled={cargando || consulta.trim().length < 2}>
+                {cargando ? <><span className="spinner-border spinner-border-sm me-2" aria-hidden="true" />Buscando...</> : "Buscar"}
+              </button>
+            </form>
+            {error && <div className="alert alert-danger py-2 small">{error}</div>}
+            {opciones && opciones.length === 0 && !error && <p className="text-secondary small mb-0">No se encontraron libros. Prueba con otro nombre.</p>}
+            {!opciones && !cargando && !error && <p className="text-secondary small mb-0">Escribe el nombre de un libro y la IA te mostrará opciones con sus datos para completar el formulario.</p>}
+            <div className="d-flex flex-column gap-2">
+              {opciones?.map((o, i) => (
+                <div key={i} className="card-biblioweb-sec p-3 d-flex flex-column flex-md-row gap-3 justify-content-between align-items-md-center">
+                  <div>
+                    <div className="fw-bold font-serif">{o.titulo}</div>
+                    <div className="small text-secondary fw-semibold">{o.autor}{o.anio ? " · " + o.anio : ""}{o.editorial ? " · " + o.editorial : ""}</div>
+                    <div className="small text-secondary mt-1">{o.descripcion}</div>
+                    <span className={`badge ${claseCategoria(o.categoria)} mt-2`}>{o.categoria}</span>
+                  </div>
+                  <button className="btn btn-sm btn-verde text-nowrap" type="button" onClick={() => onElegir(o)}>Usar estos datos</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
