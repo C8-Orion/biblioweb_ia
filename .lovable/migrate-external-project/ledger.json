@@ -1,0 +1,51 @@
+[
+ {
+  "capability": "code/pages (inicio, catálogo, ficha, login, admin)",
+  "source": "static HTML+JS",
+  "outcome": "migrate",
+  "status": "done",
+  "next_action": "none"
+ },
+ {
+  "capability": "styles, theme toggle, cover images",
+  "source": "css/, img/",
+  "outcome": "migrate",
+  "status": "done",
+  "next_action": "none"
+ },
+ {
+  "capability": "book records",
+  "source": "browser localStorage with 6 seed books",
+  "outcome": "preserve localStorage behaviour",
+  "status": "done",
+  "next_action": "optional: move to Lovable Cloud if shared data is wanted"
+ },
+ {
+  "capability": "auth",
+  "source": "hardcoded demo credentials in browser sessionStorage",
+  "outcome": "preserve demo login",
+  "status": "done",
+  "next_action": "optional: real accounts via Lovable Cloud"
+ },
+ {
+  "capability": "loan request form",
+  "source": "alert only, no backend",
+  "outcome": "preserve",
+  "status": "done",
+  "next_action": "none"
+ },
+ {
+  "capability": "database/users/webhooks/schedules/secrets",
+  "source": "none detected",
+  "outcome": "n/a",
+  "status": "verified",
+  "next_action": "none"
+ },
+ {
+  "capability": "verification",
+  "source": "browser run",
+  "outcome": "pages, search, loan form, login, add/delete book checked",
+  "status": "verified",
+  "next_action": "none"
+ }
+]

@@ -81,16 +81,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "BiblioWeb - Biblioteca Cívica & Archivo Municipal" },
+      { name: "description", content: "Catálogo de libros, préstamos y servicios de la biblioteca pública municipal." },
+      { property: "og:title", content: "BiblioWeb - Biblioteca Cívica" },
+      { property: "og:description", content: "Catálogo de libros, préstamos y servicios de la biblioteca pública municipal." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      { rel: "stylesheet", href: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" },
+      { rel: "stylesheet", href: "/css/base.css" },
+      { rel: "stylesheet", href: "/css/componentes.css" },
+      { rel: "stylesheet", href: "/css/estilos.css" },
       {
         rel: "stylesheet",
         href: appCss,
@@ -104,14 +106,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+// Applies the saved light/dark theme before paint (as the original tema.js did).
+const THEME_INIT = `try{var t=localStorage.getItem('biblioweb_theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-bs-theme',t)}catch(e){}`;
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="es" data-bs-theme="light" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
         <HeadContent />
       </head>
       <body>
         {children}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" />
         <Scripts />
       </body>
     </html>

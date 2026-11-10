@@ -1,0 +1,101 @@
+/* ==========================================================================
+   BiblioWeb - css/estilos.css
+   Ajustes visuales propios del proyecto (portadas, carrusel, tablas del
+   panel). Aquí va lo que no es un componente reutilizable.
+   ========================================================================== */
+
+/* Portadas del catálogo */
+.book-cover {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px var(--bw-shadow);
+}
+
+/* Enlaces de título hacia la ficha del libro */
+.link-libro {
+  color: inherit;
+  text-decoration: none;
+}
+.link-libro:hover,
+.link-libro:focus-visible {
+  color: var(--bw-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.card-libro .book-cover {
+  transition: transform 0.2s ease;
+}
+.card-libro a:hover .book-cover {
+  transform: translateY(-3px);
+}
+
+/* Ficha del libro */
+.ficha-portada {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 10px 28px var(--bw-shadow);
+}
+.ficha-datos dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--bs-secondary-color);
+  font-weight: 700;
+}
+.ficha-datos dd {
+  margin-bottom: 0;
+  font-weight: 600;
+}
+.ficha-sinopsis {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  max-width: 70ch;
+  text-wrap: pretty;
+}
+.relacionado-portada {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px var(--bw-shadow);
+}
+
+/* Carrusel de la página de inicio */
+.carousel-item img {
+  object-fit: cover;
+}
+
+/* Miniaturas de portada dentro de las tablas del panel de administración */
+.table img.rounded {
+  box-shadow: 0 2px 6px var(--bw-shadow);
+}
+
+/* Botón del selector de tema (sol / luna) */
+#theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Vista previa de portada en el formulario del panel */
+.portada-preview {
+  width: 120px;
+  height: 168px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px var(--bw-shadow);
+}
+
+/* Miniaturas de la tabla con tamaño fijo */
+.portada-mini {
+  object-fit: cover;
+}
+
+/* Buscador del catálogo */
+.buscador-catalogo {
+  min-width: 260px;
+}
