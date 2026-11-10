@@ -14,13 +14,106 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      prestamos: {
+        Row: {
+          autor: string
+          comentario: string
+          estado: string
+          fecha_devolucion: string
+          id: string
+          libro_id: string
+          portada: string
+          solicitado_en: string
+          titulo: string
+          user_id: string
+        }
+        Insert: {
+          autor: string
+          comentario?: string
+          estado?: string
+          fecha_devolucion?: string
+          id?: string
+          libro_id: string
+          portada?: string
+          solicitado_en?: string
+          titulo: string
+          user_id: string
+        }
+        Update: {
+          autor?: string
+          comentario?: string
+          estado?: string
+          fecha_devolucion?: string
+          id?: string
+          libro_id?: string
+          portada?: string
+          solicitado_en?: string
+          titulo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prestamos_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          full_name: string
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      solicitar_prestamo: {
+        Args: {
+          p_autor: string
+          p_comentario?: string
+          p_libro_id: string
+          p_portada?: string
+          p_titulo: string
+        }
+        Returns: {
+          autor: string
+          comentario: string
+          estado: string
+          fecha_devolucion: string
+          id: string
+          libro_id: string
+          portada: string
+          solicitado_en: string
+          titulo: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "prestamos"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       [_ in never]: never
