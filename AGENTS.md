@@ -32,3 +32,4 @@ use the editor.
 ## Project rules
 - Styling uses Bootstrap 5.3 (CDN link + bundle script in __root) plus the original stylesheets in public/css; Tailwind preflight is intentionally not imported so it doesn't reset Bootstrap.
 - Book data and the demo admin session live in the browser (localStorage/sessionStorage) via src/lib/libros.ts and src/lib/auth.ts, matching the original static site; read them only after mount to avoid SSR mismatches.
+- AI book lookup runs only on the server (src/lib/ai/*.server.ts behind a createServerFn in *.functions.ts) so the AI key never reaches the browser.
