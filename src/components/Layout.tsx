@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { ThemeToggle } from "./ThemeToggle";
+import { useReaderAuth } from "@/lib/reader-auth";
 
 const Logo = () => (
   <svg fill="none" height="28" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" width="28">
@@ -10,6 +11,7 @@ const Logo = () => (
 );
 
 export function Navbar({ activo }: { activo?: "inicio" | "catalogo" }) {
+  const { user, nombre, listo, cerrarSesion } = useReaderAuth();
   return (
     <nav className="navbar navbar-expand-lg navbar-dark navbar-biblioweb sticky-top py-2">
       <div className="container">
@@ -24,9 +26,18 @@ export function Navbar({ activo }: { activo?: "inicio" | "catalogo" }) {
             <li className="nav-item"><Link className="nav-link" to="/" hash="servicios">Servicios</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/" hash="horarios">Horarios &amp; Contacto</Link></li>
           </ul>
-          <div className="d-flex align-items-center gap-3">
+          <div className="d-flex align-items-center gap-2 flex-wrap">
             <ThemeToggle />
-            <Link className="btn btn-terracota px-3 py-1" to="/login">Acceso Admin</Link>
+            {listo && (user ? <div className="dropdown">
+              <button aria-expanded="false" className="btn btn-outline-light btn-sm dropdown-toggle px-3" data-bs-toggle="dropdown" type="button">{nombre ? `Hola, ${nombre.split(" ")[0]}` : "Mi cuenta"}</button>
+              <ul className="dropdown-menu dropdown-menu-end">
+                <li><span className="dropdown-item-text small text-secondary text-truncate">{user.email}</span></li>
+                <li><hr className="dropdown-divider" /></li>
+                <li><Link className="dropdown-item" to="/mis-prestamos">Mis préstamos</Link></li>
+                <li><button className="dropdown-item" onClick={() => void cerrarSesion()} type="button">Cerrar sesión</button></li>
+              </ul>
+            </div> : <Link className="btn btn-outline-light btn-sm px-3" to="/auth">Acceso Lectores</Link>)}
+            <Link className="btn btn-terracota btn-sm px-3" to="/login">Acceso Admin</Link>
           </div>
         </div>
       </div>
