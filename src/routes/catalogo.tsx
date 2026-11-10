@@ -38,7 +38,7 @@ function Catalogo() {
   const categoria = search.categoria ?? "";
   const estado = search.estado ?? "";
   const orden = search.orden ?? "titulo";
-  const [libroModal, setLibroModal] = useState("");
+  const [libroModal, setLibroModal] = useState<Libro | null>(null);
   const buscadorRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { const t = setTimeout(() => setQ(texto), 150); return () => clearTimeout(t); }, [texto]);
@@ -140,7 +140,7 @@ function Catalogo() {
   );
 }
 
-function Tarjeta({ libro, onPrestamo }: { libro: Libro; onPrestamo: (t: string) => void }) {
+function Tarjeta({ libro, onPrestamo }: { libro: Libro; onPrestamo: (libro: Libro) => void }) {
   const prestado = libro.estado === "Prestado";
   return (
     <div className="col-md-6 col-lg-4">
@@ -154,7 +154,7 @@ function Tarjeta({ libro, onPrestamo }: { libro: Libro; onPrestamo: (t: string) 
           <span className={`badge ${claseEstado(libro.estado)}`}>{libro.estado || "Disponible"}</span>
           <div className="d-flex gap-2">
             <Link className="btn btn-outline-secondary btn-sm" to="/libro" search={{ id: libro.id }}>Ver ficha<span className="visually-hidden"> de {libro.titulo}</span></Link>
-            <button className="btn btn-terracota btn-sm" type="button" data-bs-target="#modalPrestamo" data-bs-toggle="modal" disabled={prestado} onClick={() => onPrestamo(libro.titulo)}>
+            <button className="btn btn-terracota btn-sm" type="button" data-bs-target="#modalPrestamo" data-bs-toggle="modal" disabled={prestado} onClick={() => onPrestamo(libro)}>
               {prestado ? "No disponible" : "Solicitar préstamo"}
             </button>
           </div>

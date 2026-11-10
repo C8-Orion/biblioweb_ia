@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { FooterSimple, Navbar } from "@/components/Layout";
 import { PrestamoModal } from "@/components/PrestamoModal";
 import { ChatLibro } from "@/components/ChatLibro";
-import { claseCategoria, claseEstado, formatearISBN, onPortadaError, portadaDe, relacionados } from "@/lib/libros";
+import { claseCategoria, claseEstado, formatearISBN, onPortadaError, portadaDe, relacionados, type Libro } from "@/lib/libros";
 import { useLibros } from "@/lib/use-libros";
 
 export const Route = createFileRoute("/libro")({
@@ -33,7 +33,7 @@ function Dato({ etiqueta, valor }: { etiqueta: string; valor: unknown }) {
 function Ficha() {
   const { id } = Route.useSearch();
   const todos = useLibros();
-  const [libroModal, setLibroModal] = useState("");
+  const [libroModal, setLibroModal] = useState<Libro | null>(null);
   const libro = todos && id ? todos.find((l) => l.id === id) ?? null : null;
 
   useEffect(() => {
@@ -86,7 +86,7 @@ function Ficha() {
               </dl>
             </div>
             <div className="d-flex flex-wrap gap-2 mb-5">
-              <button className="btn btn-terracota px-4" type="button" data-bs-target="#modalPrestamo" data-bs-toggle="modal" disabled={prestado} onClick={() => setLibroModal(libro.titulo)}>
+              <button className="btn btn-terracota px-4" type="button" data-bs-target="#modalPrestamo" data-bs-toggle="modal" disabled={prestado} onClick={() => setLibroModal(libro)}>
                 {prestado ? "No disponible para préstamo" : "Solicitar préstamo"}
               </button>
               <Link className="btn btn-outline-secondary" to="/catalogo">Volver al catálogo</Link>
