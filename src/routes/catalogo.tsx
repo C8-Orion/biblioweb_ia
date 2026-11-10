@@ -73,7 +73,7 @@ function Catalogo() {
           </div>
           <div className="card-biblioweb-sec px-3 py-2 text-center">
             <div className="fw-bold fs-4 text-primary">{lista.length}</div>
-            <small className="text-secondary">Obras Registradas</small>
+            <small className="text-secondary">Total de libros</small>
           </div>
         </div>
         <form className="card-biblioweb-sec p-3 mt-4" role="search" onSubmit={(e) => { e.preventDefault(); setQ(texto); }}>
