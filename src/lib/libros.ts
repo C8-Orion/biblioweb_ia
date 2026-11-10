@@ -68,8 +68,8 @@ export type DatosLibro = Record<keyof Omit<Libro, "id">, string>;
 function normalizar(d: Partial<DatosLibro>): Omit<Libro, "id"> {
   return {
     titulo: String(d.titulo || "").trim(), autor: String(d.autor || "").trim(),
-    categoria: CATEGORIAS.includes(d.categoria || "") ? d.categoria! : CATEGORIAS[0],
-    estado: ESTADOS.includes(d.estado || "") ? d.estado! : ESTADOS[0],
+    categoria: CATEGORIAS.includes(d.categoria || "") ? d.categoria! : "Narrativa",
+    estado: ESTADOS.includes(d.estado || "") ? d.estado! : "Disponible",
     portada: String(d.portada || "").trim(), descripcion: String(d.descripcion || "").trim(),
     isbn: limpiarISBN(d.isbn), anio: normalizarAnio(d.anio),
     editorial: String(d.editorial || "").trim(), sinopsis: String(d.sinopsis || "").trim(),
