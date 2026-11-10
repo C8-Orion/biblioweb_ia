@@ -10,10 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CatalogoRouteImport } from './routes/catalogo'
 import { Route as LibroRouteImport } from './routes/libro'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedMisPrestamosRouteImport } from './routes/_authenticated/mis-prestamos'
 import { Route as ApiChatLibroRouteImport } from './routes/api/chat-libro'
 
 const IndexRoute = IndexRouteImport.update({
@@ -21,9 +24,18 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CatalogoRoute = CatalogoRouteImport.update({
@@ -41,6 +53,12 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedMisPrestamosRoute =
+  AuthenticatedMisPrestamosRouteImport.update({
+    id: '/mis-prestamos',
+    path: '/mis-prestamos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiChatLibroRoute = ApiChatLibroRouteImport.update({
   id: '/api/chat-libro',
   path: '/api/chat-libro',
@@ -50,47 +68,74 @@ const ApiChatLibroRoute = ApiChatLibroRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/catalogo': typeof CatalogoRoute
   '/libro': typeof LibroRoute
   '/login': typeof LoginRoute
+  '/mis-prestamos': typeof AuthenticatedMisPrestamosRoute
   '/api/chat-libro': typeof ApiChatLibroRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/catalogo': typeof CatalogoRoute
   '/libro': typeof LibroRoute
   '/login': typeof LoginRoute
+  '/mis-prestamos': typeof AuthenticatedMisPrestamosRoute
   '/api/chat-libro': typeof ApiChatLibroRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/catalogo': typeof CatalogoRoute
   '/libro': typeof LibroRoute
   '/login': typeof LoginRoute
+  '/_authenticated/mis-prestamos': typeof AuthenticatedMisPrestamosRoute
   '/api/chat-libro': typeof ApiChatLibroRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/admin' | '/catalogo' | '/libro' | '/login' | '/api/chat-libro'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/catalogo' | '/libro' | '/login' | '/api/chat-libro'
-  id:
-    | '__root__'
     | '/'
     | '/admin'
+    | '/auth'
     | '/catalogo'
     | '/libro'
     | '/login'
+    | '/mis-prestamos'
+    | '/api/chat-libro'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/admin'
+    | '/auth'
+    | '/catalogo'
+    | '/libro'
+    | '/login'
+    | '/mis-prestamos'
+    | '/api/chat-libro'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/admin'
+    | '/auth'
+    | '/catalogo'
+    | '/libro'
+    | '/login'
+    | '/_authenticated/mis-prestamos'
     | '/api/chat-libro'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AdminRoute: typeof AdminRoute
+  AuthRoute: typeof AuthRoute
   CatalogoRoute: typeof CatalogoRoute
   LibroRoute: typeof LibroRoute
   LoginRoute: typeof LoginRoute
@@ -106,11 +151,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/catalogo': {
@@ -134,6 +193,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/mis-prestamos': {
+      id: '/_authenticated/mis-prestamos'
+      path: '/mis-prestamos'
+      fullPath: '/mis-prestamos'
+      preLoaderRoute: typeof AuthenticatedMisPrestamosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/chat-libro': {
       id: '/api/chat-libro'
       path: '/api/chat-libro'
@@ -144,9 +210,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedMisPrestamosRoute: typeof AuthenticatedMisPrestamosRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedMisPrestamosRoute: AuthenticatedMisPrestamosRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AdminRoute: AdminRoute,
+  AuthRoute: AuthRoute,
   CatalogoRoute: CatalogoRoute,
   LibroRoute: LibroRoute,
   LoginRoute: LoginRoute,
