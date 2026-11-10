@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CatalogoRouteImport } from './routes/catalogo'
 import { Route as LibroRouteImport } from './routes/libro'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ApiChatLibroRouteImport } from './routes/api/chat-libro'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +41,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiChatLibroRoute = ApiChatLibroRouteImport.update({
+  id: '/api/chat-libro',
+  path: '/api/chat-libro',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/catalogo': typeof CatalogoRoute
   '/libro': typeof LibroRoute
   '/login': typeof LoginRoute
+  '/api/chat-libro': typeof ApiChatLibroRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/catalogo': typeof CatalogoRoute
   '/libro': typeof LibroRoute
   '/login': typeof LoginRoute
+  '/api/chat-libro': typeof ApiChatLibroRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,22 @@ export interface FileRoutesById {
   '/catalogo': typeof CatalogoRoute
   '/libro': typeof LibroRoute
   '/login': typeof LoginRoute
+  '/api/chat-libro': typeof ApiChatLibroRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/catalogo' | '/libro' | '/login'
+  fullPaths:
+    '/' | '/admin' | '/catalogo' | '/libro' | '/login' | '/api/chat-libro'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/catalogo' | '/libro' | '/login'
-  id: '__root__' | '/' | '/admin' | '/catalogo' | '/libro' | '/login'
+  to: '/' | '/admin' | '/catalogo' | '/libro' | '/login' | '/api/chat-libro'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/catalogo'
+    | '/libro'
+    | '/login'
+    | '/api/chat-libro'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +94,7 @@ export interface RootRouteChildren {
   CatalogoRoute: typeof CatalogoRoute
   LibroRoute: typeof LibroRoute
   LoginRoute: typeof LoginRoute
+  ApiChatLibroRoute: typeof ApiChatLibroRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +134,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/chat-libro': {
+      id: '/api/chat-libro'
+      path: '/api/chat-libro'
+      fullPath: '/api/chat-libro'
+      preLoaderRoute: typeof ApiChatLibroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +150,7 @@ const rootRouteChildren: RootRouteChildren = {
   CatalogoRoute: CatalogoRoute,
   LibroRoute: LibroRoute,
   LoginRoute: LoginRoute,
+  ApiChatLibroRoute: ApiChatLibroRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
