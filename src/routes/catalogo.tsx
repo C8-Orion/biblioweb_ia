@@ -5,14 +5,14 @@ import { PrestamoModal } from "@/components/PrestamoModal";
 import { CATEGORIAS, claseCategoria, claseEstado, onPortadaError, portadaDe, type Libro } from "@/lib/libros";
 import { useLibros } from "@/lib/use-libros";
 
-type Busqueda = { q?: string; categoria?: string; estado?: string; orden?: string };
+type Busqueda = { q?: string | undefined; categoria?: string | undefined; estado?: string | undefined; orden?: string | undefined };
 
 export const Route = createFileRoute("/catalogo")({
   validateSearch: (s: Record<string, unknown>): Busqueda => ({
-    q: typeof s.q === "string" && s.q ? s.q : undefined,
-    categoria: typeof s.categoria === "string" && CATEGORIAS.includes(s.categoria) ? s.categoria : undefined,
-    estado: s.estado === "disponibles" || s.estado === "Prestado" ? s.estado : undefined,
-    orden: s.orden === "autor" || s.orden === "recientes" ? s.orden : undefined,
+    q: typeof s["q"] === "string" && s["q"] ? s["q"] : undefined,
+    categoria: typeof s["categoria"] === "string" && CATEGORIAS.includes(s["categoria"]) ? s["categoria"] : undefined,
+    estado: s["estado"] === "disponibles" || s["estado"] === "Prestado" ? s["estado"] : undefined,
+    orden: s["orden"] === "autor" || s["orden"] === "recientes" ? s["orden"] : undefined,
   }),
   head: () => ({
     meta: [
