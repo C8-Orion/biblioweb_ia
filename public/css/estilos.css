@@ -99,3 +99,12 @@
 .buscador-catalogo {
   min-width: 260px;
 }
+
+/* Chat con el libro */
+.chat-libro-mensajes { max-height: 420px; overflow-y: auto; display: flex; flex-direction: column; gap: .75rem; }
+.chat-msg { max-width: 85%; line-height: 1.55; }
+.chat-msg-usuario { align-self: flex-end; background: var(--color-coffee-bean); color: var(--color-almond-cream); padding: .5rem .85rem; border-radius: 1rem 1rem .25rem 1rem; white-space: pre-wrap; }
+.chat-msg-libro { align-self: flex-start; }
+.chat-msg-autor { font-family: var(--font-serif); font-weight: 700; font-size: .8rem; color: var(--bs-secondary-color); margin-bottom: .2rem; }
+.chat-markdown p:last-child, .chat-markdown ul:last-child, .chat-markdown ol:last-child { margin-bottom: 0; }
+.chat-libro textarea { resize: none; }
