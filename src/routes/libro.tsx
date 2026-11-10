@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { FooterSimple, Navbar } from "@/components/Layout";
 import { PrestamoModal } from "@/components/PrestamoModal";
+import { ChatLibro } from "@/components/ChatLibro";
 import { claseCategoria, claseEstado, formatearISBN, onPortadaError, portadaDe, relacionados } from "@/lib/libros";
 import { useLibros } from "@/lib/use-libros";
 
@@ -98,6 +99,7 @@ function Ficha() {
                   : <p className="text-secondary">Este libro aún no tiene sinopsis registrada.</p>}
               </div>
             </section>
+            <ChatLibro key={libro.id} libro={libro} />
           </div>
         </article>
       </>
