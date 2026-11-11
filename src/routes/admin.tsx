@@ -1,10 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { buscarLibrosIA } from "@/lib/ai/buscar-libros.functions";
 import type { OpcionLibroIA } from "@/lib/ai/buscar-libros.server";
 import { AdminNavbar, FooterSimple } from "@/components/Layout";
-import { estaAutenticado, logout } from "@/lib/auth";
+import { listarSolicitudesAdminFn, verificarAdminFn, type SolicitudAdmin } from "@/lib/admin.functions";
+import { estadoVisiblePrestamo, formatearFecha } from "@/lib/prestamos";
+import { useReaderAuth } from "@/lib/reader-auth";
 import { hideModal, showModal } from "@/lib/bootstrap";
 import {
   actualizar, agregar, CATEGORIAS, claseCategoria, claseEstado, eliminar, ESTADOS, formatearISBN,

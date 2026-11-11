@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { FooterSimple, Navbar } from "@/components/Layout";
-import { CRED_CLAVE, CRED_CORREO, estaAutenticado, login } from "@/lib/auth";
+import { verificarAdminFn } from "@/lib/admin.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
