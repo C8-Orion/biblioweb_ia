@@ -30,21 +30,36 @@ export const Route = createFileRoute("/admin")({
 });
 
 const VACIO: DatosLibro = { titulo: "", autor: "", portada: "", categoria: "", estado: "Disponible", descripcion: "", isbn: "", anio: "", editorial: "", sinopsis: "" };
-const SOLICITUDES = [
-  ["SOL-001", "Cosmos", "Elena Valenzuela", "elena.v@correo.test", "Para tesis de grado en comunicación científica"],
-  ["SOL-002", "Cien Años de Soledad", "Mateo Rivas", "m.rivas@lectores.org", "Lectura para club de libro municipal"],
-  ["SOL-003", "Clean Code", "Sofía Navarro", "sofia.navarro@tech.es", "Lista de espera tras renovación"],
-];
-
 function Admin() {
   const navigate = useNavigate();
-  const [listo, setListo] = useState(false);
-  useEffect(() => { if (!estaAutenticado()) navigate({ to: "/login", replace: true }); else setListo(true); }, [navigate]);
-  if (!listo) return null;
-  return <Panel onLogout={() => { logout(); navigate({ to: "/" }); }} />;
+  const verificarAdmin = useServerFn(verificarAdminFn);
+  const { user, nombre, listo, cerrarSesion } = useReaderAuth();
+  const [autorizado, setAutorizado] = useState(false);
+  const [denegado, setDenegado] = useState(false);
+
+  useEffect(() => {
+    if (!listo) return;
+    if (!user) { navigate({ to: "/login", replace: true }); return; }
+    let activo = true;
+    verificarAdmin().then((esAdmin) => {
+      if (!activo) return;
+      setAutorizado(esAdmin); setDenegado(!esAdmin);
+    }).catch(() => { if (activo) setDenegado(true); });
+    return () => { activo = false; };
+  }, [listo, user, navigate, verificarAdmin]);
+
+  if (denegado) return <main className="container py-5 text-center">
+    <div className="card card-biblioweb p-5 col-lg-6 mx-auto">
+      <h1 className="h3 font-serif fw-bold">Acceso no autorizado</h1>
+      <p className="text-secondary">Esta cuenta no tiene permisos de administración.</p>
+      <button className="btn btn-terracota align-self-center" type="button" onClick={() => void cerrarSesion("/login")}>Cerrar sesión</button>
+    </div>
+  </main>;
+  if (!autorizado) return <main className="container py-5 text-center" role="status">Comprobando permisos...</main>;
+  return <Panel nombreAdmin={nombre} onLogout={() => void cerrarSesion("/login")} />;
 }
 
-function Panel({ onLogout }: { onLogout: () => void }) {
+function Panel({ nombreAdmin, onLogout }: { nombreAdmin: string; onLogout: () => void }) {
   const todos = useLibros() ?? [];
   const [datos, setDatos] = useState<DatosLibro>(VACIO);
   const [editId, setEditId] = useState<string | null>(null);
@@ -93,7 +108,7 @@ function Panel({ onLogout }: { onLogout: () => void }) {
             <h1 className="font-serif fw-bold display-6 mb-1">Consola Central de Administración</h1>
             <p className="text-secondary mb-0">Gestión de acervo bibliográfico, inventario y solicitudes ciudadanas.</p>
           </div>
-          <div className="badge bg-success-subtle text-success fs-6 px-3 py-2 border">● Sesión Activa: admin@biblioweb.test</div>
+          <div className="badge bg-success-subtle text-success fs-6 px-3 py-2 border">● Sesión activa: {nombreAdmin || "Administrador"}</div>
         </div>
 
         <section className="card card-biblioweb p-4 mb-5" aria-labelledby="form-libro-titulo">
