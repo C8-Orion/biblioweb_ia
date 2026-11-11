@@ -15,6 +15,13 @@
       "when": 1794355720136,
       "tag": "0001_add_admin_roles_and_loan_visibility",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794355737468,
+      "tag": "0002_allow_admins_to_read_requester_names",
+      "breakpoints": true
     }
   ]
 }
