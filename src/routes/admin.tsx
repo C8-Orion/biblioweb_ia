@@ -250,27 +250,7 @@ function Panel({ nombreAdmin, onLogout }: { nombreAdmin: string; onLogout: () =>
           </div>
         </section>
 
-        <section className="card card-biblioweb p-4">
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h4 className="font-serif fw-bold text-primary mb-0">Solicitudes Recibidas</h4>
-            <span className="badge bg-warning-subtle text-warning-emphasis">3 Pendientes</span>
-          </div>
-          <div className="table-responsive">
-            <table className="table table-hover align-middle mb-0">
-              <thead className="table-light">
-                <tr><th scope="col">ID</th><th scope="col">Libro Solicitado</th><th scope="col">Solicitante</th><th scope="col">Correo</th><th scope="col">Comentario</th><th scope="col">Estado</th></tr>
-              </thead>
-              <tbody>
-                {SOLICITUDES.map(([id, libro, nombre, correo, com]) => (
-                  <tr key={id}>
-                    <td><code>{id}</code></td><td className="fw-bold">{libro}</td><td>{nombre}</td><td>{correo}</td>
-                    <td><em>"{com}"</em></td><td><span className="badge bg-warning text-dark">Pendiente</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+        <SolicitudesRecibidas />
       </main>
 
       <div aria-hidden="true" aria-labelledby="modalEliminarLabel" className="modal fade" id="modalEliminar" tabIndex={-1} ref={modalRef}>
@@ -321,6 +301,56 @@ function Panel({ nombreAdmin, onLogout }: { nombreAdmin: string; onLogout: () =>
       <FooterSimple>BiblioWeb · Sistema Cívico de Archivo Municipal · Acceso Autorizado</FooterSimple>
     </>
   );
+}
+
+function SolicitudesRecibidas() {
+  const listar = useServerFn(listarSolicitudesAdminFn);
+  const [solicitudes, setSolicitudes] = useState<SolicitudAdmin[] | null>(null);
+  const [error, setError] = useState("");
+  const [actualizando, setActualizando] = useState(false);
+
+  const cargar = useCallback(async () => {
+    setActualizando(true); setError("");
+    try { setSolicitudes(await listar()); }
+    catch (err) { setError(err instanceof Error ? err.message : "No se pudieron cargar las solicitudes."); }
+    finally { setActualizando(false); }
+  }, [listar]);
+
+  useEffect(() => { void cargar(); }, [cargar]);
+
+  return <section className="card card-biblioweb p-4" aria-labelledby="titulo-solicitudes">
+    <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-3">
+      <div className="d-flex align-items-center gap-2">
+        <h2 className="h4 font-serif fw-bold text-primary mb-0" id="titulo-solicitudes">Solicitudes recibidas</h2>
+        {solicitudes && <span className="badge bg-secondary-subtle text-secondary-emphasis">{solicitudes.length === 1 ? "1 solicitud" : `${solicitudes.length} solicitudes`}</span>}
+      </div>
+      <button className="btn btn-sm btn-outline-secondary align-self-start" disabled={actualizando} type="button" onClick={() => void cargar()}>{actualizando ? "Actualizando..." : "Actualizar"}</button>
+    </div>
+    {error && <div className="alert alert-danger py-2 small" role="alert">{error}</div>}
+    <div className="table-responsive">
+      <table className="table table-hover align-middle mb-0">
+        <thead className="table-light">
+          <tr><th scope="col">ID</th><th scope="col">Libro solicitado</th><th scope="col">Solicitante</th><th scope="col">Comentario</th><th scope="col">Solicitud</th><th scope="col">Devolución</th><th scope="col">Estado</th></tr>
+        </thead>
+        <tbody>
+          {!solicitudes && !error ? <tr><td colSpan={7} className="text-center text-secondary py-5">Cargando solicitudes...</td></tr>
+            : solicitudes?.length === 0 ? <tr><td colSpan={7} className="text-center text-secondary py-5">Aún no hay solicitudes de préstamo.</td></tr>
+            : solicitudes?.map((solicitud) => {
+              const estado = estadoVisiblePrestamo(solicitud);
+              return <tr key={solicitud.id}>
+                <td><code title={solicitud.id}>{solicitud.id.slice(0, 8).toUpperCase()}</code></td>
+                <td><div className="fw-bold">{solicitud.titulo}</div><small className="text-secondary">{solicitud.autor}</small></td>
+                <td>{solicitud.solicitante}</td>
+                <td>{solicitud.comentario ? <em>“{solicitud.comentario}”</em> : <span className="text-secondary small">Sin comentario</span>}</td>
+                <td className="text-nowrap">{formatearFecha(solicitud.solicitado_en)}</td>
+                <td className="text-nowrap fw-semibold">{formatearFecha(solicitud.fecha_devolucion)}</td>
+                <td><span className={`badge ${estado === "Activo" ? "bg-success" : estado === "Vencido" ? "bg-danger" : "bg-secondary"}`}>{estado}</span></td>
+              </tr>;
+            })}
+        </tbody>
+      </table>
+    </div>
+  </section>;
 }
 
 function ModalIA({ modalRef, onElegir }: { modalRef: React.RefObject<HTMLDivElement | null>; onElegir: (o: OpcionLibroIA) => void }) {
