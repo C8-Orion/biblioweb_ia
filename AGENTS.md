@@ -31,5 +31,5 @@ use the editor.
 
 ## Project rules
 - Styling uses Bootstrap 5.3 (CDN link + bundle script in __root) plus the original stylesheets in public/css; Tailwind preflight is intentionally not imported so it doesn't reset Bootstrap.
-- Book data and the demo admin session live in the browser (localStorage/sessionStorage) via src/lib/libros.ts and src/lib/auth.ts, matching the original static site; read them only after mount to avoid SSR mismatches.
+- Book data lives in browser localStorage via src/lib/libros.ts, matching the original static site; read it only after mount to avoid SSR mismatches. Admin access uses Lovable Cloud authentication and the server-verified admin role in public.user_roles, never browser-only credentials.
 - AI features (book lookup server fn, /api/chat-libro streaming route) keep model calls in src/lib/ai/*.server.ts so the AI key never reaches the browser; chat UI uses Bootstrap, not AI Elements, because Tailwind is not loaded.

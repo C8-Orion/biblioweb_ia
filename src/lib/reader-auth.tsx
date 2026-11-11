@@ -14,7 +14,7 @@ type ReaderAuthValue = {
   user: User | null;
   nombre: string;
   listo: boolean;
-  cerrarSesion: () => Promise<void>;
+  cerrarSesion: (destino?: "/auth" | "/login") => Promise<void>;
 };
 
 const ReaderAuthContext = createContext<ReaderAuthValue | null>(null);
@@ -57,11 +57,11 @@ export function ReaderAuthProvider({ children }: { children: ReactNode }) {
     return () => { activo = false; subscription.unsubscribe(); };
   }, [cargarPerfil, navigate, queryClient, router]);
 
-  const cerrarSesion = useCallback(async () => {
+  const cerrarSesion = useCallback(async (destino: "/auth" | "/login" = "/auth") => {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+    navigate({ to: destino, replace: true });
   }, [navigate, queryClient]);
 
   const value = useMemo(() => ({ user: session?.user ?? null, nombre, listo, cerrarSesion }), [session, nombre, listo, cerrarSesion]);

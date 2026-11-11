@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { FooterSimple, Navbar } from "@/components/Layout";
-import { CRED_CLAVE, CRED_CORREO, estaAutenticado, login } from "@/lib/auth";
+import { verificarAdminFn } from "@/lib/admin.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -19,10 +21,31 @@ export const Route = createFileRoute("/login")({
 
 function Login() {
   const navigate = useNavigate();
+  const verificarAdmin = useServerFn(verificarAdminFn);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
-  useEffect(() => { if (estaAutenticado()) navigate({ to: "/admin", replace: true }); }, [navigate]);
+  const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(false);
+
+  async function ingresar(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(""); setCargando(true);
+    const { error: errorAcceso } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    if (errorAcceso) {
+      setError("Correo o contraseña incorrectos.");
+      setCargando(false);
+      return;
+    }
+    try {
+      if (await verificarAdmin()) navigate({ to: "/admin" });
+      else {
+        await supabase.auth.signOut();
+        setError("Esta cuenta no tiene permisos de administración.");
+      }
+    } catch {
+      setError("No pudimos comprobar los permisos. Inténtalo de nuevo.");
+    } finally { setCargando(false); }
+  }
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -36,11 +59,8 @@ function Login() {
                 <h2 className="font-serif fw-bold">Acceso de Administrador</h2>
                 <p className="text-secondary small">Autenticación para archiveros y personal de gestión de sala</p>
               </div>
-              {error && <div className="alert alert-danger py-2 px-3 small" role="alert">Correo o contraseña incorrectos</div>}
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                if (login(email.trim(), password)) { setError(false); navigate({ to: "/admin" }); } else setError(true);
-              }}>
+              {error && <div className="alert alert-danger py-2 px-3 small" role="alert">{error}</div>}
+              <form onSubmit={ingresar}>
                 <div className="mb-3">
                   <label htmlFor="email" className="form-label small fw-bold">Correo Electrónico Institucional</label>
                   <input type="email" className="form-control" id="email" placeholder="admin@biblioweb.test" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -49,16 +69,9 @@ function Login() {
                   <label htmlFor="password" className="form-label small fw-bold">Contraseña de Seguridad</label>
                   <input type="password" className="form-control" id="password" placeholder="••••••••" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
-                <button type="submit" className="btn btn-verde w-100 py-2 mb-3">Ingresar al Sistema</button>
+                <button type="submit" className="btn btn-verde w-100 py-2 mb-3" disabled={cargando}>{cargando ? "Comprobando acceso..." : "Ingresar al Sistema"}</button>
               </form>
-              <div className="card-biblioweb-sec p-3 rounded-2 small mt-3">
-                <div className="d-flex justify-content-between align-items-center mb-1">
-                  <strong>Cuenta de prueba:</strong>
-                  <button type="button" className="btn btn-sm btn-outline-dark py-0 px-2" style={{ fontSize: "0.75rem" }} onClick={() => { setEmail(CRED_CORREO); setPassword(CRED_CLAVE); }}>Cargar datos</button>
-                </div>
-                <div className="text-secondary">Usuario: <code>{CRED_CORREO}</code></div>
-                <div className="text-secondary">Clave: <code>{CRED_CLAVE}</code></div>
-              </div>
+              <p className="text-secondary small text-center mb-0">Usa la cuenta de lector que tenga permisos de administración.</p>
             </div>
           </div>
         </div>
